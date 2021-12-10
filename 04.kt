@@ -2,7 +2,7 @@
 import java.io.File
 import kotlin.math.pow
 
-fun main(args: Array<String>) {
+fun main() {
     val boards = mutableListOf<Board>()
     for (i in 0 until data.size / 25) {
         boards.add(Board(data.subList(i * 25, (i + 1) * 25)))
