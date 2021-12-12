@@ -38,9 +38,11 @@ fun main() {
             }
         }
         flashes += flashed.size
+        if (step == 100) {
+            println("[part one] $flashes")
+        }
         if (input.find { it != 0 } == null) {
             println("[part two] step $step")
         }
     }
-    println("[part one] $flashes")
 }
