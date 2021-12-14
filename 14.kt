@@ -25,7 +25,6 @@ fun main() {
     charsMap[templatePartTwo.last()] = charsMap.getOrDefault(templatePartTwo.last(), 0) + 1
     // divide by two
     charsMap.keys.forEach { key -> charsMap[key] = charsMap[key]!! / 2}
-    println(charsMap)
     min = charsMap.minByOrNull { it.value }!!.value
     max = charsMap.maxByOrNull { it.value }!!.value
     println("[part two] $min $max = ${max - min}")
@@ -43,44 +42,18 @@ fun step(t: String): String {
     return output
 }
 
-fun stepPartTwo(tuples: MutableMap<String, Long>): MutableMap<String, Long> {
+fun stepPartTwo(inputTuples: MutableMap<String, Long>): MutableMap<String, Long> {
     val output = mutableMapOf<String, Long>()
-    tuples.forEach { tuple ->
+    inputTuples.forEach { tuple ->
         val insert = input.firstOrNull { it.first == tuple.key }!!.second
         val a = tuple.key.first() + insert
         val b = insert + tuple.key.last()
-        output[a] = output.getOrDefault(a, 0) + 1
-        output[b] = output.getOrDefault(b, 0) + 1
-        if (tuple.value > 1) {
-            output[tuple.key] = tuple.value - 1
-        }
+        output[a] = output.getOrDefault(a, 0) + tuple.value
+        output[b] = output.getOrDefault(b, 0) + tuple.value
     }
     return output
 }
 
-var template = "NNCB"
-var templatePartTwo = "NNCB"
-
-val input = listOf(
-Pair("CH", "B"),
-Pair("HH", "N"),
-Pair("CB", "H"),
-Pair("NH", "C"),
-Pair("HB", "C"),
-Pair("HC", "B"),
-Pair("HN", "C"),
-Pair("NN", "C"),
-Pair("BH", "H"),
-Pair("NC", "B"),
-Pair("NB", "B"),
-Pair("BN", "B"),
-Pair("BB", "N"),
-Pair("BC", "B"),
-Pair("CC", "N"),
-Pair("CN", "C")
-)
-
-/*
 var template = "CBNBOKHVBONCPPBBCKVH"
 var templatePartTwo = "CBNBOKHVBONCPPBBCKVH"
 
@@ -185,4 +158,4 @@ Pair("PH", "K"),
 Pair("ON", "H"),
 Pair("PN", "K"),
 Pair("NO", "S")
-)*/
+)
