@@ -4,47 +4,38 @@ fun main(args: Array<String>) {
     val txt = File(args[0]).useLines { it.toList() }
     txt.forEach { line -> line.split("").filter { t -> t.isNotEmpty() }.forEach { input.add(it.toInt()) } }
     println(input.size)
-    solve(Pair(0, 0), -input[0], listOf())
+    solve()
 }
 
-fun solve(xy: Pair<Int, Int>, sum: Int, path: List<Pair<Int, Int>>) {
-    if (path.contains(xy)) {
-        return
-    }
-    val x = xy.first
-    val y = xy.second
-    val add = sum + input[y * cols + x]
-    if (add >= minSum) {
-        return
-    }
-    if (x == cols - 1 && y == rows - 1) {
-        if (add < minSum) {
-            minSum = add
-            println("[part one] $minSum")
+data class Node(val coord: Pair<Int, Int>, val sum: Int)
+
+fun solve() {
+    val queue = mutableListOf<Node>(Node(Pair(0, 0), 0))
+    val visited = mutableListOf<Pair<Int, Int>>()
+    val minDist = mutableMapOf<Pair<Int, Int>, Int>()
+    while (queue.isNotEmpty()) {
+        val last = queue.removeLast()
+        if (visited.contains(last.coord)) {
+            continue
         }
-        return
+        val x = last.coord.first
+        val y = last.coord.second
+        visited.add(last.coord)
+        if (x == cols - 1 && y == rows - 1) {
+            println("[part one] ${last.sum}")
+            return
+        }
+        for (near in listOf(Pair(x + 1, y), Pair(x - 1, y), Pair(x, y + 1), Pair(x, y - 1))) {
+            if (0 <= near.first && near.first < cols && 0 <= near.second && near.second < rows && !visited.contains(near)) {
+                val test = input[near.second * cols + near.first]
+                val newDist = last.sum + test
+                if (!minDist.containsKey(near) || newDist < minDist[near]!!) {
+                    minDist[near] = newDist
+                    queue.add(Node(near, newDist))
+                }
+            }
+        }
     }
-    val newPath = path.toMutableList()
-    newPath.add(xy)
-    val e = Pair(x + 1, y)
-    val s = Pair(x, y + 1)
-    val w = Pair(x - 1, y)
-    val n = Pair(x, y - 1)
-    val next = 
-    when {
-        x < cols - 1 -> next = Math.min(next, input[e.second * cols + e.first]
-        y < rows - 1 -> next[input[s.second * cols + s.first]] = s
-        x > 0 -> next[input[w.second * cols + w.first]] = w
-        y > 0 -> next[input[n.second * cols + n.first]] = n
-    }
-    if (next.isNotEmpty()) {
-        val lowest = next[next.keys.sorted().first()]!!
-        solve(lowest, add, newPath)
-    }
-}
-
-fun get(x: Int, y: Int): Int {
-    return input[y * cols + x]
 }
 
 val input = mutableListOf<Int>()
