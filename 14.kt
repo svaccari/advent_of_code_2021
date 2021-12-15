@@ -1,4 +1,3 @@
-
 fun main() {
     for (step in 1..10) {
         template = step(template)
