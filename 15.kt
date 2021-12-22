@@ -3,45 +3,78 @@ import java.io.File
 fun main(args: Array<String>) {
     val txt = File(args[0]).useLines { it.toList() }
     txt.forEach { line -> line.split("").filter { t -> t.isNotEmpty() }.forEach { input.add(it.toInt()) } }
-    println(input.size)
-    solve()
+    solve("one")
+    val oldCols = cols
+    val oldRows = rows
+    val mult = 5
+    cols *= mult
+    rows *= mult
+    val secondInput = mutableListOf<Int>()
+    for (i in 0 until cols * rows) {
+        secondInput.add(0)
+    }
+    for (y in 0 until rows) {
+        for (x in 0 until cols) {
+            val yMod = y % oldRows
+            val xMod = x % oldCols
+            val offset = y / oldRows + x / oldCols
+            var tmp = input[yMod * oldCols + xMod] + offset
+            while (tmp > 9)
+                tmp -= 9
+            secondInput[y * cols + x] = tmp
+        }
+    }
+    input = secondInput
+    solve("two")
 }
 
 data class Node(val coord: Pair<Int, Int>, val sum: Int)
 
-fun solve() {
+fun solve(part: String) {
     val queue = mutableListOf<Node>(Node(Pair(0, 0), 0))
-    val visited = mutableListOf<Pair<Int, Int>>()
+    val visited = mutableSetOf<Pair<Int, Int>>()
     val minDist = mutableMapOf<Pair<Int, Int>, Int>()
     while (queue.isNotEmpty()) {
-        val last = queue.removeLast()
+        var last = Node(Pair(0, 0), 99999)
+        queue.forEach {
+            if (it.sum < last.sum) {
+                last = it
+            }
+        }
+        queue.remove(last)
+        val x = last.coord.first
+        val y = last.coord.second
+        if (x == cols - 1 && y == rows - 1) {
+            println("[part $part] (${cols}x${rows}) ${last.sum}")
+            return
+        }
         if (visited.contains(last.coord)) {
             continue
         }
-        val x = last.coord.first
-        val y = last.coord.second
         visited.add(last.coord)
-        if (x == cols - 1 && y == rows - 1) {
-            println("[part one] ${last.sum}")
-            return
-        }
-        for (near in listOf(Pair(x + 1, y), Pair(x - 1, y), Pair(x, y + 1), Pair(x, y - 1))) {
-            if (0 <= near.first && near.first < cols && 0 <= near.second && near.second < rows && !visited.contains(near)) {
-                val test = input[near.second * cols + near.first]
-                val newDist = last.sum + test
-                if (!minDist.containsKey(near) || newDist < minDist[near]!!) {
-                    minDist[near] = newDist
-                    queue.add(Node(near, newDist))
-                }
+        getNear(x, y, visited).forEach { near ->
+            val newDist = last.sum + input[near.second * cols + near.first]
+            if (!minDist.containsKey(near) || newDist < minDist[near]!!) {
+                minDist[near] = newDist
+                queue.add(Node(near, newDist))
             }
         }
     }
 }
 
-val input = mutableListOf<Int>()
-var minSum = 500
-val cols = 100
-val rows = 100
+fun getNear(x: Int, y: Int, visited: Set<Pair<Int, Int>>): Set<Pair<Int, Int>> {
+    val output = mutableSetOf<Pair<Int, Int>>()
+    for (near in listOf(Pair(x + 1, y), Pair(x - 1, y), Pair(x, y + 1), Pair(x, y - 1))) {
+        if (0 <= near.first && near.first < cols && 0 <= near.second && near.second < rows && !visited.contains(near)) {
+            output.add(near)
+        }
+    }
+    return output
+}
+
+var input = mutableListOf<Int>()
+var cols = 100
+var rows = 100
 
 /*
 val input = listOf(
